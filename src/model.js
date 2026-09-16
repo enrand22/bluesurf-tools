@@ -1,0 +1,156 @@
+export function parseTicketKey(code) {
+  const match = /^([A-Z]+)-\d+$/.exec(code);
+  if (!match) {
+    throw new Error(`Invalid ticket key: ${code}`);
+  }
+  return { projectCode: match[1], code };
+}
+
+export function flattenKanbanWorkItems(kanban) {
+  const items = [];
+  for (const board of kanban ?? []) {
+    for (const status of board.statuses ?? []) {
+      for (const item of status.workItems ?? []) {
+        items.push({
+          ...item,
+          statusName: item.statusName ?? status.name,
+        });
+      }
+    }
+  }
+  return items;
+}
+
+export function modalCurrentSprintId(items) {
+  const counts = new Map();
+  for (const item of items) {
+    const id = item.currentSprintId;
+    if (!id) continue;
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  let winner = null;
+  let max = 0;
+  for (const [id, count] of counts) {
+    if (count > max) {
+      winner = id;
+      max = count;
+    }
+  }
+  return winner;
+}
+
+export function listMyCurrentSprintWorkItems(kanban) {
+  const items = flattenKanbanWorkItems(kanban);
+  const sprintId = modalCurrentSprintId(items);
+  if (!sprintId) return [];
+  return items.filter((item) => item.currentSprintId === sprintId);
+}
+
+export function sortByPriority(items) {
+  return [...items].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+}
+
+function isPendingSprintStatus(status) {
+  const value = String(status ?? "").toLowerCase();
+  const analysis = value.includes("analysis");
+  const dev = value.includes("dev");
+  const inProgress = value.includes("in progress");
+  const done = value.includes("done");
+  return (dev && inProgress) || (analysis && inProgress) || (analysis && done);
+}
+
+export function groupSprintRows(rows) {
+  const pending = [];
+  const done = [];
+  for (const row of rows) {
+    if (isPendingSprintStatus(row.status ?? row.statusName)) pending.push(row);
+    else done.push(row);
+  }
+  return { pending, done };
+}
+
+export function toAttachment(file) {
+  const workItemId = file.workItemId;
+  const id = file.id;
+  return {
+    id,
+    workItemId,
+    name: file.name ?? "",
+    isImage: Boolean(file.isImage),
+    filePath: `/api/workItem/${workItemId}/file/${id}`,
+    fileNamePath: `/api/workItem/${workItemId}/fileName/${id}`,
+    imagePath: file.isImage ? `/api/workItem/${workItemId}/image/${id}` : null,
+  };
+}
+
+export function toSprintRow(item) {
+  return {
+    code: item.code,
+    title: item.name,
+    estimatedHours: item.estimatedEffort ?? 0,
+    effortHours: item.totalExecuted ?? 0,
+    type: item.typeDisplayName ?? "",
+    tags: (item.tags ?? []).map((tag) => tag.tagName).filter(Boolean),
+    priority: item.priorityName ?? "",
+    status: item.statusName ?? "",
+    sprint: item.currentSprintName ?? "",
+  };
+}
+
+function tableCell(value) {
+  return String(value ?? "").replaceAll("|", "\\|");
+}
+
+function sprintTable(rows) {
+  const lines = [
+    "| Ticket | Title | Estimate | Effort | Type | Status | Priority | Tags |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |",
+  ];
+  for (const row of rows) {
+    const ticket = `[[RLand/Tickets/${row.code}/detail|${row.code}]]`;
+    const tags = row.tags?.length ? row.tags.join(", ") : "—";
+    lines.push(
+      `| ${tableCell(ticket)} | ${tableCell(row.title)} | ${row.estimatedHours}h | ${row.effortHours ?? 0}h | ${tableCell(row.type)} | ${tableCell(row.status)} | ${tableCell(row.priority)} | ${tableCell(tags)} |`,
+    );
+  }
+  return lines;
+}
+
+export function toSprintNote(rows, { date } = {}) {
+  const sprint = rows[0]?.sprint || "Current sprint";
+  const { pending, done } = groupSprintRows(rows);
+  return [
+    `# ${sprint} — ${date}`,
+    "",
+    "## Pending Tickets",
+    "",
+    ...sprintTable(pending),
+    "",
+    "## Done Tickets",
+    "",
+    ...sprintTable(done),
+    "",
+  ].join("\n");
+}
+
+export function toTicketNote(item) {
+  const tags = (item.tags ?? []).map((tag) => tag.tagName).filter(Boolean);
+  const attachments = (item.files ?? []).map((file) => file.name).filter(Boolean);
+  const estimate = item.estimatedEffort ?? 0;
+  return [
+    `# ${item.code} — ${item.name}`,
+    "",
+    `**Priority:** ${item.priorityName ?? ""}`,
+    `**Type:** ${item.typeDisplayName ?? ""}`,
+    `**Status:** ${item.statusName ?? ""}`,
+    `**Sprint:** ${item.currentSprintName ?? ""}`,
+    `**Estimate:** ${estimate}h`,
+    `**Tags:** ${tags.join(", ") || "—"}`,
+    `**Attachments:** ${attachments.join(", ") || "—"}`,
+    "",
+    "## Description",
+    "",
+    item.description ?? "",
+    "",
+  ].join("\n");
+}
