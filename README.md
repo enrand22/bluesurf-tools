@@ -1,0 +1,94 @@
+# bluesurf-tools
+
+Local Blue Surf client and Cursor/Codex skills. They replay **your** SSO session in a dedicated Chromium profile. There is no public API and no password handling.
+
+Skills live at `~/.agents/skills/bluesurf-ticket` and `bluesurf-sprint` (linked into `~/.claude/skills` and `~/.cursor/skills`). Use them in a **new chat**. If the session is dead, run `npm run login` here first.
+
+Design notes: [docs/design.md](docs/design.md).
+
+## Setup
+
+```bash
+cd ~/Projects/bluesurf-tools
+cp .env.example .env
+npm install
+npm run login
+```
+
+Complete SSO in the window that opens. Press Enter in the terminal when you can see Blue Surf.
+
+`.env` points at `https://surf.bluepeople.com` and the BluePeople Obsidian vault (`RLand/Tickets`, `RLand/Sprints`).
+
+## `/bluesurf-ticket`
+
+Pull one Surf work item into Obsidian, then stop. Do not start coding until you choose grill or implement.
+
+**Say:** `/bluesurf-ticket RLD-336`, or “pull RLD-336”.
+
+**Does:**
+
+1. Opens Chromium briefly to reuse the saved session.
+2. Writes `RLand/Tickets/RLD-336/detail.md` (title, priority, type, status, sprint, estimate, tags, attachment names, HTML description).
+3. Downloads files into `RLand/Tickets/RLD-336/attachments/`.
+4. Stops and asks **grill vs implement**.
+
+**Complete the ticket** when the work is finished:
+
+| You say | What happens |
+| --- | --- |
+| “The ticket is complete” | Deletes `RLand/Tickets/RLD-336/` from the vault. |
+| “Commit and push” | Commits the **implementation repo** with `(RLD-336)` at the end of the subject, pushes that branch, then deletes the vault folder. That phrase is push permission for this ticket. |
+
+Same as the CLIs:
+
+```bash
+npm run ticket -- RLD-336
+npm run ticket-done -- RLD-336
+```
+
+## `/bluesurf-sprint`
+
+Snapshot your assigned tickets on the current Surf sprint into Obsidian.
+
+**Say:** `/bluesurf-sprint`, “sprint note”, or “current sprint”.
+
+**Does:**
+
+1. Opens Chromium briefly to reuse the saved session.
+2. Loads tickets assigned to you on the modal current sprint (most common `currentSprintId` on your board).
+3. For each ticket, reads reported hours from the work item (`totalExecuted`), not the board’s inflated `totalHours`.
+4. Writes or **rewrites** the note for that sprint (same file if Sprint 14 was already captured).
+
+**Vault file:** `RLand/Sprints/<YYYY-MM-DD>.md` (first capture), then the same path is updated on later runs.
+
+**Tables:**
+
+- **Pending Tickets** — `Development (IN PROGRESS)`, `Analysis (IN PROGRESS)`, `Analysis (DONE)`
+- **Done Tickets** — everything else
+
+Each table is ordered by priority. Columns: ticket (wiki link to `RLand/Tickets/RLD-xxx/detail`), title, estimate, effort (hours already reported), type, status, priority, tags.
+
+Does not pull a single ticket unless you ask.
+
+```bash
+npm run sprint
+npm run sprint -- RLD 2026-09-16
+```
+
+## Commands
+
+| Command | Purpose |
+| --- | --- |
+| `npm run login` | Save SSO in `.chrome-profile/` |
+| `npm run ticket -- RLD-336` | Write ticket note + attachments |
+| `npm run ticket-done -- RLD-336` | Delete that ticket folder from the vault |
+| `npm run sprint` | Write or rewrite the current-sprint note |
+| `npm test` | Unit tests |
+| `npm run spike` | Record Surf XHR (only if the API map in `docs/design.md` is stale) |
+
+## Safety
+
+- Do not commit `.chrome-profile/`, `.scratch/`, or `.env`
+- Do not put passwords in this repo
+- Never `POST /api/login` from our code
+- Never push unless you explicitly ask (or say **commit and push** on a pulled ticket)
