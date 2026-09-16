@@ -1,0 +1,18 @@
+{
+  "name": "bluesurf-tools",
+  "private": true,
+  "type": "module",
+  "description": "Local Blue Surf client for agent skills. Uses your SSO session only.",
+  "scripts": {
+    "login": "node scripts/login.mjs",
+    "spike": "node scripts/spike-capture.mjs",
+    "ticket": "node scripts/ticket.mjs",
+    "ticket-done": "node scripts/ticket-done.mjs",
+    "sprint": "node scripts/sprint.mjs",
+    "test": "node --test test/*.test.js",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.55.0"
+  }
+}

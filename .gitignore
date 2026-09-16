@@ -1,0 +1,7 @@
+node_modules/
+.chrome-profile/
+.scratch/
+.env
+*.har
+npm-debug.log
+.DS_Store
