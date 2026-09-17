@@ -2,16 +2,20 @@
 
 Local Blue Surf client and Cursor/Codex skills. They replay **your** SSO session in a dedicated Chromium profile. There is no public API and no password handling.
 
-Skills live at `~/.agents/skills/bluesurf-ticket` and `bluesurf-sprint` (linked into `~/.claude/skills` and `~/.cursor/skills`). Use them in a **new chat**. If the session is dead, run `npm run login` here first.
+This workflow is **opinionated to me (Pato Piña / patopiña)**. After a ticket is pulled, agents follow [Matt Pocock’s engineering skills](https://github.com/mattpocock/skills) — grill → spec → tickets → implement with TDD → review — plus the two Blue Surf skills below. That routing is mine; it is not a generic Surf or Blue People process.
 
-Design notes: [docs/design.md](docs/design.md).
+Cursor user rules that drive it live in [`rules/`](rules/). Blue Surf skills live in [`skills/`](skills/) and are linked into `~/.agents/skills` (also `~/.claude/skills` and `~/.cursor/skills`). Use them in a **new chat**. If the session is dead, run `npm run login` here first.
+
+Design notes: [docs/design.md](docs/design.md). Full install: [docs/setup.md](docs/setup.md).
 
 ## Setup
 
+On a new machine, follow **[docs/setup.md](docs/setup.md)** — clone, Surf login, Matt Pocock skills, Blue Surf skill links, then the Cursor/Codex rules.
+
+If this machine is already set up and you only need the Surf session:
+
 ```bash
 cd ~/Projects/bluesurf-tools
-cp .env.example .env
-npm install
 npm run login
 ```
 
