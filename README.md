@@ -21,6 +21,8 @@ npm run login
 
 Complete SSO in the window that opens. It saves the session to `.surf-cookies.json` and closes by itself once you are signed in. After that, every command runs headless — no window.
 
+When the session expires, the skills run `npm run login` for you: a window opens, you sign in, and the agent retries the command.
+
 `.env` points at `https://surf.bluepeople.com` and the BluePeople Obsidian vault (`RLand/Tickets`, `RLand/Sprints`).
 
 ## `/bluesurf-ticket`
