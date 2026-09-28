@@ -98,8 +98,6 @@ That overwrites `~/.codex/AGENTS.md`. If you already have other sections there, 
 
 - **Claude Code** reads `~/.claude/skills/`, which step 3 already links. The Blue Surf skills work without the Cursor rules or the Matt Pocock pack; skip steps 2, 4, and 5 if you only want the Surf commands. Start a new session after linking so the skills load.
 - **Vault path:** `.env.example` has a macOS iCloud path. On Linux, point `OBSIDIAN_VAULT` at any folder, e.g. `~/Documents/BluePeople`.
-- **A Chromium window opens on every run.** That is expected: the scripts run headed by default. Surf may flash its login page for a few seconds while it restores the session. Do not log in again; the window closes by itself.
-- **Do not set `BLUESURF_HEADED=0` on Linux.** Headless Chromium cannot read the cookies the headed login saved (the headed browser encrypts them with the desktop keyring), so every headless run fails with "session not ready".
 
 ## 6. Check it
 
