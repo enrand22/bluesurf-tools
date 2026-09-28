@@ -154,3 +154,54 @@ export function toTicketNote(item) {
     "",
   ].join("\n");
 }
+
+export function isDoneStatus(status) {
+  return String(status ?? "").toLowerCase().includes("done");
+}
+
+export function toMyTicketRow(item) {
+  return {
+    code: item.code,
+    title: item.name,
+    status: item.statusName ?? "",
+    priority: item.priorityName ?? "",
+    estimatedHours: item.estimatedEffort ?? 0,
+    type: item.typeDisplayName ?? "",
+    tags: (item.tags ?? []).map((tag) => tag.tagName).filter(Boolean),
+    sprint: item.currentSprintName ?? "",
+  };
+}
+
+// Groups my work items by sprint: newest sprint first (by the number in its
+// name), no sprint last, priority order inside each. Hides DONE unless `all`.
+export function groupMyTickets(items, { all = false } = {}) {
+  const groups = new Map();
+  for (const item of items) {
+    if (!all && isDoneStatus(item.statusName)) continue;
+    const key = item.currentSprintName || "";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+  const rank = (name) => {
+    if (!name) return -1;
+    const match = /(\d+)/.exec(name);
+    return match ? Number(match[1]) : 0;
+  };
+  return [...groups.entries()]
+    .sort(([a], [b]) => rank(b) - rank(a))
+    .map(([sprint, list]) => ({
+      sprint: sprint || "No sprint",
+      items: sortByPriority(list).map(toMyTicketRow),
+    }));
+}
+
+export function formatMyTickets(groups) {
+  const lines = [];
+  for (const { sprint, items } of groups) {
+    lines.push(`${sprint} (${items.length})`);
+    for (const row of items) {
+      lines.push(`  ${row.code}  ${row.status}  ${row.priority}  ${row.estimatedHours}h  ${row.title}`);
+    }
+  }
+  return lines.join("\n");
+}
