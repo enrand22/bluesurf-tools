@@ -34,6 +34,7 @@ export function createVault({
   }
 
   return {
+    ticketsDir,
     ticketDir,
     notePath,
     attachmentDir,

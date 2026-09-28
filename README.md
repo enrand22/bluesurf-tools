@@ -59,7 +59,7 @@ Snapshot your assigned tickets on the current Surf sprint into Obsidian.
 **Does:**
 
 1. Opens Chromium briefly to reuse the saved session.
-2. Loads tickets assigned to you on the modal current sprint (most common `currentSprintId` on your board).
+2. Loads tickets assigned to you on the latest sprint (highest-numbered `currentSprintName` on your cards; falls back to the most common `currentSprintId` if names have no number).
 3. For each ticket, reads reported hours from the work item (`totalExecuted`), not the board’s inflated `totalHours`.
 4. Writes or **rewrites** the note for that sprint (same file if Sprint 14 was already captured).
 
@@ -67,10 +67,10 @@ Snapshot your assigned tickets on the current Surf sprint into Obsidian.
 
 **Tables:**
 
-- **Pending Tickets** — `Development (IN PROGRESS)`, `Analysis (IN PROGRESS)`, `Analysis (DONE)`
+- **Pending Tickets** — `Development (IN PROGRESS)`, `Analysis (IN PROGRESS)`, `Analysis (DONE)`, and any `BLOCKED` status
 - **Done Tickets** — everything else
 
-Each table is ordered by priority. Columns: ticket (wiki link to `RLand/Tickets/RLD-xxx/detail`), title, estimate, effort (hours already reported), type, status, priority, tags.
+Each table is ordered by priority. Columns: ticket (wiki link to `<OBSIDIAN_TICKETS_DIR>/RLD-xxx/detail`), title, estimate, effort (hours already reported), type, status, priority, tags.
 
 Does not pull a single ticket unless you ask.
 
