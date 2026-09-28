@@ -12,7 +12,7 @@ Repo: `~/Projects/bluesurf-tools`. Session is the Playwright profile there. On 4
 2. From the repo: `npm run ticket -- RLD-336`.
 3. Done when `RLand/Tickets/RLD-336/detail.md` exists. Chromium may open briefly.
 
-Then **stop**. Ask grill vs implement via AskQuestion (recommended: grill). Do not start coding.
+Then **stop**. Ask grill vs implement with the harness question tool (`AskQuestion` in Cursor, `AskUserQuestion` in Claude Code; recommended: grill). Do not start coding.
 
 ## Complete
 
