@@ -12,7 +12,7 @@ const all = args.includes("--all");
 const json = args.includes("--json");
 const projectCode = args.find((arg) => !arg.startsWith("--")) ?? process.env.BLUESURF_PROJECT ?? "RLD";
 
-const headless = process.env.BLUESURF_HEADED === "0";
+const headless = process.env.BLUESURF_HEADED !== "1";
 const client = await createSessionClient({
   origin: process.env.BLUESURF_ORIGIN,
   headless,

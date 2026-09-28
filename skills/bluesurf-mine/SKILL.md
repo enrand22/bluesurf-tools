@@ -5,7 +5,7 @@ description: Lists the Blue Surf tickets assigned to you across every sprint, ne
 
 Repo: `~/Projects/bluesurf-tools`. Session is the Playwright profile there. On 401, tell the user to run `npm run login`.
 
-1. From the repo: `npm run mine -- --json` (add `--all` to include DONE tickets). Chromium may open briefly.
+1. From the repo: `npm run mine -- --json` (add `--all` to include DONE tickets).
 2. Parse the JSON: an array of `{ sprint, items[] }`, newest sprint first, `No sprint` last. Each item has `code`, `title`, `status`, `priority`, `estimatedHours`, `type`, `tags`, `sprint`.
 3. Answer the user from that list. Open means any status without `DONE` (in progress, blocked, backlog).
 
