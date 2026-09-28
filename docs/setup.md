@@ -54,7 +54,7 @@ These two skills live in this repo. Point the agent skill dirs at them:
 REPO="$HOME/Projects/bluesurf-tools"
 mkdir -p ~/.agents/skills ~/.claude/skills ~/.cursor/skills
 
-for name in bluesurf-ticket bluesurf-sprint; do
+for name in bluesurf-ticket bluesurf-sprint bluesurf-move; do
   ln -sfn "$REPO/skills/$name" "$HOME/.agents/skills/$name"
   ln -sfn "$REPO/skills/$name" "$HOME/.claude/skills/$name"
   ln -sfn "$REPO/skills/$name" "$HOME/.cursor/skills/$name"
