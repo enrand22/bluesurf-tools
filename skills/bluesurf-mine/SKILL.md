@@ -1,6 +1,6 @@
 ---
 name: bluesurf-mine
-description: Lists the Blue Surf tickets assigned to you across every sprint, newest sprint first. Read-only; writes nothing to the vault. Use for /bluesurf-mine, "my tickets", "what's assigned to me", or "what's still open" in Surf.
+description: Lists the Blue Surf (Surf) tickets assigned to the user across every sprint, newest sprint first. Read-only; writes nothing to the vault. This is the default for any question about the user's Surf tickets, in any wording: "surf my tickets", "my tickets", "what's on my plate", "what's assigned to me", "anything blocked?", "what's still open", or /bluesurf-mine.
 ---
 
 Repo: `~/Projects/bluesurf-tools`. Session is `.surf-cookies.json` there, loaded into headless Chromium.
