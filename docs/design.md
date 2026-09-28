@@ -16,7 +16,7 @@ Local client and agent skills for **your** Blue Surf session. No public API. No 
 
 ## Layers
 
-1. **Session** — headed Playwright persistent context. You complete SSO once. Cookies stay in `.chrome-profile/`.
+1. **Session** — Playwright persistent context plus a cookie jar. You complete SSO once in a headed window; `npm run login` saves the cookies to `.surf-cookies.json`, and every later run loads them into a headless context. Surf's auth cookie (`.AspNetCore.Identity.Application`) is a browser-session cookie, so Chromium drops it on exit and the profile alone never stays signed in.
 2. **Client** — call the same JSON URLs the Blue Surf SPA already uses. File names and bytes are authenticated GETs from `workItem.files[]`.
 3. **Skills** — thin wrappers. They never store passwords. If the session is dead, they fail with “run `npm run login`”.
 
@@ -120,6 +120,6 @@ Session helper: `apiGet(path)` / `apiPost(path, json)` on `https://surf.bluepeop
 ## Out of scope
 
 - Bypassing SSO or sharing someone else’s session
-- Committing `.chrome-profile` or cookies
+- Committing `.chrome-profile`, `.surf-cookies.json`, or cookies
 - Auto-implementing from a ticket
 - Pushing this repo anywhere unless you ask

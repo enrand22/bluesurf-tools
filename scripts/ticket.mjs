@@ -22,7 +22,7 @@ if (!vaultRoot) {
   process.exit(1);
 }
 
-const headless = process.env.BLUESURF_HEADED === "0";
+const headless = process.env.BLUESURF_HEADED !== "1";
 const client = await createSessionClient({
   origin: process.env.BLUESURF_ORIGIN,
   headless,

@@ -19,7 +19,7 @@ cd ~/Projects/bluesurf-tools
 npm run login
 ```
 
-Complete SSO in the window that opens. Press Enter in the terminal when you can see Blue Surf.
+Complete SSO in the window that opens. It saves the session to `.surf-cookies.json` and closes by itself once you are signed in. After that, every command runs headless — no window.
 
 `.env` points at `https://surf.bluepeople.com` and the BluePeople Obsidian vault (`RLand/Tickets`, `RLand/Sprints`).
 
@@ -31,7 +31,7 @@ Pull one Surf work item into Obsidian, then stop. Do not start coding until you 
 
 **Does:**
 
-1. Opens Chromium briefly to reuse the saved session.
+1. Reuses the saved session in headless Chromium.
 2. Writes `RLand/Tickets/RLD-336/detail.md` (title, priority, type, status, sprint, estimate, tags, attachment names, HTML description).
 3. Downloads files into `RLand/Tickets/RLD-336/attachments/`.
 4. Stops and asks **grill vs implement**.
@@ -58,7 +58,7 @@ Snapshot your assigned tickets on the current Surf sprint into Obsidian.
 
 **Does:**
 
-1. Opens Chromium briefly to reuse the saved session.
+1. Reuses the saved session in headless Chromium.
 2. Loads tickets assigned to you on the modal current sprint (most common `currentSprintId` on your board).
 3. For each ticket, reads reported hours from the work item (`totalExecuted`), not the board’s inflated `totalHours`.
 4. Writes or **rewrites** the note for that sprint (same file if Sprint 14 was already captured).
@@ -83,7 +83,7 @@ npm run sprint -- RLD 2026-09-16
 
 | Command | Purpose |
 | --- | --- |
-| `npm run login` | Save SSO in `.chrome-profile/` |
+| `npm run login` | Sign in once; saves the session to `.surf-cookies.json` |
 | `npm run ticket -- RLD-336` | Write ticket note + attachments |
 | `npm run ticket-done -- RLD-336` | Delete that ticket folder from the vault |
 | `npm run sprint` | Write or rewrite the current-sprint note |
@@ -92,7 +92,8 @@ npm run sprint -- RLD 2026-09-16
 
 ## Safety
 
-- Do not commit `.chrome-profile/`, `.scratch/`, or `.env`
+- Do not commit `.chrome-profile/`, `.surf-cookies.json`, `.scratch/`, or `.env` (`.surf-cookies.json` is your live Surf session; it is written with mode 600)
+- `BLUESURF_HEADED=1` shows the browser window, for debugging
 - Do not put passwords in this repo
 - Never `POST /api/login` from our code
 - Never push unless you explicitly ask (or say **commit and push** on a pulled ticket)

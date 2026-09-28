@@ -16,7 +16,7 @@ if (!vaultRoot) {
 
 const projectCode = process.argv[2] ?? process.env.BLUESURF_PROJECT ?? "RLD";
 const date = process.argv[3] ?? todayStamp();
-const headless = process.env.BLUESURF_HEADED === "0";
+const headless = process.env.BLUESURF_HEADED !== "1";
 const client = await createSessionClient({
   origin: process.env.BLUESURF_ORIGIN,
   headless,

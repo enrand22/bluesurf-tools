@@ -4,13 +4,13 @@ description: Pulls a Blue Surf work item into the BluePeople vault, then stops a
 disable-model-invocation: true
 ---
 
-Repo: `~/Projects/bluesurf-tools`. Session is the Playwright profile there. On 401, tell the user to run `npm run login`.
+Repo: `~/Projects/bluesurf-tools`. Session is `.surf-cookies.json` there, loaded into headless Chromium. On 401, tell the user to run `npm run login`.
 
 ## Pull
 
 1. Take the ticket key from the user (`RLD-336`).
 2. From the repo: `npm run ticket -- RLD-336`.
-3. Done when `RLand/Tickets/RLD-336/detail.md` exists. Chromium may open briefly.
+3. Done when `RLand/Tickets/RLD-336/detail.md` exists.
 
 Then **stop**. Ask grill vs implement via AskQuestion (recommended: grill). Do not start coding.
 
