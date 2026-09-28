@@ -33,4 +33,4 @@ await new Promise((resolve) => {
 });
 
 await context.close();
-console.log("Session saved. Next: npm run sprint, or npm run ticket -- RLD-xxx");
+console.log("Session saved. Next: npm run spike");
