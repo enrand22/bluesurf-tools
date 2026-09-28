@@ -10,17 +10,25 @@ export function profileDir() {
   return path.join(root, ".chrome-profile");
 }
 
-async function warmSession(context, origin) {
+// The SPA takes 1.5–7s after load to restore the session (measured on a warm
+// profile), so a 10s budget failed intermittently with a false "expired".
+const WARM_TIMEOUT_MS = 30_000;
+
+async function warmSession(context, origin, timeoutMs = WARM_TIMEOUT_MS) {
   const page = context.pages()[0] ?? (await context.newPage());
   await page.goto(origin, { waitUntil: "domcontentloaded" });
-  for (let attempt = 0; attempt < 40; attempt++) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
     const response = await context.request.get(`${origin}/api/instance/currentUser`, {
       headers: { Accept: "application/json" },
     });
     if (response.ok()) return;
     await page.waitForTimeout(250);
   }
-  const error = new Error("Blue Surf session expired. Run npm run login and retry.");
+  const seconds = Math.round(timeoutMs / 1000);
+  const error = new Error(
+    `Blue Surf session not ready after ${seconds}s (likely expired). Run npm run login and retry.`,
+  );
   error.status = 401;
   throw error;
 }
@@ -29,6 +37,7 @@ export async function createSessionRequest({
   origin = process.env.BLUESURF_ORIGIN ?? "https://surf.bluepeople.com",
   userDataDir = profileDir(),
   headless = true,
+  warmTimeoutMs = Number(process.env.BLUESURF_WARM_TIMEOUT_MS) || WARM_TIMEOUT_MS,
 } = {}) {
   await mkdir(userDataDir, { recursive: true });
   const context = await chromium.launchPersistentContext(userDataDir, {
@@ -37,7 +46,7 @@ export async function createSessionRequest({
   });
 
   try {
-    await warmSession(context, origin);
+    await warmSession(context, origin, warmTimeoutMs);
   } catch (error) {
     await context.close();
     throw error;
