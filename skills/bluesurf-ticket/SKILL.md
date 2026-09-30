@@ -1,7 +1,6 @@
 ---
 name: bluesurf-ticket
-description: Pulls a Blue Surf work item into the BluePeople vault, then stops and asks grill vs implement. Completes the ticket when you say it is complete or commit and push. Use for /bluesurf-ticket, RLD-xxx from Surf, ticket is complete, or commit and push.
-disable-model-invocation: true
+description: Pulls one Blue Surf (Surf) work item such as RLD-388 into the Obsidian vault (detail note plus attachments), then stops and asks grill vs implement. Use when the user wants a specific ticket brought down or worked on, in any wording: "surf RLD-388", "pull RLD-388", "grab ticket 388 from Surf", "let's work on RLD-388", or /bluesurf-ticket. The complete branch ("the ticket is complete", "commit and push") applies only to a ticket pulled with this skill earlier in the same conversation; otherwise "commit and push" is ordinary git work, not this skill.
 ---
 
 Repo: `~/Projects/bluesurf-tools`. Session is `.surf-cookies.json` there, loaded into headless Chromium.

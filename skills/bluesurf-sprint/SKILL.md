@@ -1,7 +1,6 @@
 ---
 name: bluesurf-sprint
-description: Writes or rewrites the assigned current-sprint table in BluePeople RLand/Sprints. Use for /bluesurf-sprint, sprint note, or current sprint from Surf.
-disable-model-invocation: true
+description: Writes or rewrites the current-sprint note (pending and done tables of the user's assigned Surf tickets) in the Obsidian vault under RLand/Sprints. Use when the user wants their sprint captured, written, or refreshed in the vault, in any wording: "surf my sprint", "sprint note", "snapshot the sprint", "update my sprint in Obsidian", or /bluesurf-sprint. To just list or ask about tickets without writing a note, use bluesurf-mine instead.
 ---
 
 Repo: `~/Projects/bluesurf-tools`. Session is `.surf-cookies.json` there, loaded into headless Chromium.
