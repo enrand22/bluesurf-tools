@@ -19,7 +19,9 @@ cd ~/Projects/bluesurf-tools
 npm run login
 ```
 
-Complete SSO in the window that opens. Press Enter in the terminal when you can see Blue Surf.
+Complete SSO in the window that opens. It saves the session to `.surf-cookies.json` and closes by itself once you are signed in. After that, every command runs headless — no window.
+
+When the session expires, the skills run `npm run login` for you: a window opens, you sign in, and the agent retries the command.
 
 `.env` points at `https://surf.bluepeople.com` and the BluePeople Obsidian vault (`RLand/Tickets`, `RLand/Sprints`).
 
@@ -31,7 +33,7 @@ Pull one Surf work item into Obsidian, then stop. Do not start coding until you 
 
 **Does:**
 
-1. Opens Chromium briefly to reuse the saved session.
+1. Reuses the saved session in headless Chromium.
 2. Writes `RLand/Tickets/RLD-336/detail.md` (title, priority, type, status, sprint, estimate, tags, attachment names, HTML description).
 3. Downloads files into `RLand/Tickets/RLD-336/attachments/`.
 4. Stops and asks **grill vs implement**.
@@ -97,7 +99,7 @@ npm run mine -- --json  # machine-readable, for agents
 
 | Command | Purpose |
 | --- | --- |
-| `npm run login` | Save SSO in `.chrome-profile/` |
+| `npm run login` | Sign in once; saves the session to `.surf-cookies.json` |
 | `npm run ticket -- RLD-336` | Write ticket note + attachments |
 | `npm run ticket-done -- RLD-336` | Delete that ticket folder from the vault |
 | `npm run sprint` | Write or rewrite the current-sprint note |
@@ -107,7 +109,8 @@ npm run mine -- --json  # machine-readable, for agents
 
 ## Safety
 
-- Do not commit `.chrome-profile/`, `.scratch/`, or `.env`
+- Do not commit `.chrome-profile/`, `.surf-cookies.json`, `.scratch/`, or `.env` (`.surf-cookies.json` is your live Surf session; it is written with mode 600)
+- `BLUESURF_HEADED=1` shows the browser window, for debugging
 - Do not put passwords in this repo
 - Never `POST /api/login` from our code
 - Never push unless you explicitly ask (or say **commit and push** on a pulled ticket)

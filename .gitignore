@@ -5,3 +5,4 @@ node_modules/
 *.har
 npm-debug.log
 .DS_Store
+.surf-cookies.json

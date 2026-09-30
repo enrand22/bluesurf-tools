@@ -26,7 +26,7 @@ npm install
 npm run login
 ```
 
-Complete SSO in the Chromium window. Press Enter in the terminal when you can see Blue Surf. The session stays in `.chrome-profile/` (gitignored). Never `POST /api/login` from this repo.
+Complete SSO in the Chromium window. It saves the session to `.surf-cookies.json` (gitignored, mode 600) and closes by itself once you are signed in; later commands run headless. Never `POST /api/login` from this repo.
 
 ## 2. Install Matt Pocock’s skills
 
@@ -115,4 +115,4 @@ test -f ~/.agents/skills/bluesurf-mine/SKILL.md && echo "mine skill ok"
 test -f ~/.codex/AGENTS.md && echo "codex rules ok"
 ```
 
-Then a **new** Cursor chat: `/bluesurf-sprint` or “pull RLD-336”. If Chromium 401s, run `npm run login` again.
+Then a **new** Cursor chat: `/bluesurf-sprint` or “pull RLD-336”. If a command says the session expired, run `npm run login` again.
