@@ -94,6 +94,11 @@ cp ~/Projects/bluesurf-tools/rules/AGENTS.md ~/.codex/AGENTS.md
 
 That overwrites `~/.codex/AGENTS.md`. If you already have other sections there, merge by hand instead of copying.
 
+## Claude Code and Linux notes
+
+- **Claude Code** reads `~/.claude/skills/`, which step 3 already links. The Blue Surf skills work without the Cursor rules or the Matt Pocock pack; skip steps 2, 4, and 5 if you only want the Surf commands. Start a new session after linking so the skills load.
+- **Vault path:** `.env.example` has a macOS iCloud path. On Linux, point `OBSIDIAN_VAULT` at any folder, e.g. `~/Documents/BluePeople`.
+
 ## 6. Check it
 
 ```bash
