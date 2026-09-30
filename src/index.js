@@ -8,6 +8,7 @@ export {
   formatMyTickets,
   groupMyTickets,
   isDoneStatus,
+  latestCurrentSprintId,
   listMyCurrentSprintWorkItems,
   modalCurrentSprintId,
   parseTicketKey,
