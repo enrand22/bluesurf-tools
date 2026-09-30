@@ -1,8 +1,8 @@
 # bluesurf-tools
 
-Local Blue Surf client and Cursor/Codex skills. They replay **your** SSO session in a dedicated Chromium profile. There is no public API and no password handling.
+Local Blue Surf client and agent skills (Cursor, Codex, Claude Code). They replay **your** SSO session in a dedicated Chromium profile. There is no public API and no password handling.
 
-This workflow is **opinionated to me (Pato Piña / patopiña)**. After a ticket is pulled, agents follow [Matt Pocock’s engineering skills](https://github.com/mattpocock/skills) — grill → spec → tickets → implement with TDD → review — plus the two Blue Surf skills below. That routing is mine; it is not a generic Surf or Blue People process.
+This workflow is **opinionated to me (Pato Piña / patopiña)**. After a ticket is pulled, agents follow [Matt Pocock’s engineering skills](https://github.com/mattpocock/skills) — grill → spec → tickets → implement with TDD → review — plus the Blue Surf skills below. That routing is mine; it is not a generic Surf or Blue People process.
 
 Cursor user rules that drive it live in [`rules/`](rules/). Blue Surf skills live in [`skills/`](skills/) and are linked into `~/.agents/skills` (also `~/.claude/skills` and `~/.cursor/skills`). Use them in a **new chat**. If the session is dead, run `npm run login` here first.
 
@@ -60,8 +60,8 @@ Snapshot your assigned tickets on the current Surf sprint into Obsidian.
 
 **Does:**
 
-1. Reuses the saved session in headless Chromium.
-2. Loads tickets assigned to you on the modal current sprint (most common `currentSprintId` on your board).
+1. Opens Chromium briefly to reuse the saved session.
+2. Loads tickets assigned to you on the latest sprint (highest-numbered `currentSprintName` on your cards; falls back to the most common `currentSprintId` if names have no number).
 3. For each ticket, reads reported hours from the work item (`totalExecuted`), not the board’s inflated `totalHours`.
 4. Writes or **rewrites** the note for that sprint (same file if Sprint 14 was already captured).
 
@@ -69,16 +69,30 @@ Snapshot your assigned tickets on the current Surf sprint into Obsidian.
 
 **Tables:**
 
-- **Pending Tickets** — `Development (IN PROGRESS)`, `Analysis (IN PROGRESS)`, `Analysis (DONE)`
+- **Pending Tickets** — `Development (IN PROGRESS)`, `Analysis (IN PROGRESS)`, `Analysis (DONE)`, and any `BLOCKED` status
 - **Done Tickets** — everything else
 
-Each table is ordered by priority. Columns: ticket (wiki link to `RLand/Tickets/RLD-xxx/detail`), title, estimate, effort (hours already reported), type, status, priority, tags.
+Each table is ordered by priority. Columns: ticket (wiki link to `<OBSIDIAN_TICKETS_DIR>/RLD-xxx/detail`), title, estimate, effort (hours already reported), type, status, priority, tags.
 
 Does not pull a single ticket unless you ask.
 
 ```bash
 npm run sprint
 npm run sprint -- RLD 2026-09-16
+```
+
+## `/bluesurf-mine`
+
+List the tickets assigned to you across **every** sprint. Read-only; nothing is written to the vault.
+
+**Say:** `/bluesurf-mine`, “my tickets”, or “what’s assigned to me”.
+
+**Does:** loads your assigned cards, hides any `DONE` status, and groups the rest by sprint (newest first, no sprint last), ordered by priority. Agents call it with `--json`.
+
+```bash
+npm run mine            # open tickets
+npm run mine -- --all   # include DONE
+npm run mine -- --json  # machine-readable, for agents
 ```
 
 ## Commands
@@ -89,6 +103,7 @@ npm run sprint -- RLD 2026-09-16
 | `npm run ticket -- RLD-336` | Write ticket note + attachments |
 | `npm run ticket-done -- RLD-336` | Delete that ticket folder from the vault |
 | `npm run sprint` | Write or rewrite the current-sprint note |
+| `npm run mine` | List your open tickets across all sprints (`--all`, `--json`) |
 | `npm test` | Unit tests |
 | `npm run spike` | Record Surf XHR (only if the API map in `docs/design.md` is stale) |
 

@@ -9,7 +9,7 @@ export function todayStamp(now = new Date()) {
 
 export async function exportSprint({ client, vault, projectCode, date }) {
   const rows = await client.listMyCurrentSprintRows(projectCode);
-  const notePath = await vault.writeSprint(date, toSprintNote(rows, { date }), {
+  const notePath = await vault.writeSprint(date, toSprintNote(rows, { date, ticketsDir: vault.ticketsDir }), {
     sprint: rows[0]?.sprint,
   });
   return { notePath, rows };

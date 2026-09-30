@@ -1,6 +1,6 @@
 # Setup
 
-This is **Pato Piña / patopiña’s** agent setup, not a generic Surf or Blue People process. After a ticket is pulled, agents follow [Matt Pocock’s engineering skills](https://github.com/mattpocock/skills) (grill → spec → tickets → implement with TDD → review) plus the two Blue Surf skills in this repo.
+This is **Pato Piña / patopiña’s** agent setup, not a generic Surf or Blue People process. After a ticket is pulled, agents follow [Matt Pocock’s engineering skills](https://github.com/mattpocock/skills) (grill → spec → tickets → implement with TDD → review) plus the Blue Surf skills in this repo.
 
 Do this on a new machine, or when the home-dir skills/rules are missing. Open a **new chat** after you finish so Cursor and Codex reload rules.
 
@@ -48,13 +48,13 @@ Do **not** run `/setup-matt-pocock-skills` here. That skill is per implementatio
 
 ## 3. Install the Blue Surf skills
 
-These two skills live in this repo. Point the agent skill dirs at them:
+These skills live in this repo. Point the agent skill dirs at them:
 
 ```bash
 REPO="$HOME/Projects/bluesurf-tools"
 mkdir -p ~/.agents/skills ~/.claude/skills ~/.cursor/skills
 
-for name in bluesurf-ticket bluesurf-sprint; do
+for name in bluesurf-ticket bluesurf-sprint bluesurf-mine; do
   ln -sfn "$REPO/skills/$name" "$HOME/.agents/skills/$name"
   ln -sfn "$REPO/skills/$name" "$HOME/.claude/skills/$name"
   ln -sfn "$REPO/skills/$name" "$HOME/.cursor/skills/$name"
@@ -94,6 +94,11 @@ cp ~/Projects/bluesurf-tools/rules/AGENTS.md ~/.codex/AGENTS.md
 
 That overwrites `~/.codex/AGENTS.md`. If you already have other sections there, merge by hand instead of copying.
 
+## Claude Code and Linux notes
+
+- **Claude Code** reads `~/.claude/skills/`, which step 3 already links. The Blue Surf skills work without the Cursor rules or the Matt Pocock pack; skip steps 2, 4, and 5 if you only want the Surf commands. Start a new session after linking so the skills load.
+- **Vault path:** `.env.example` has a macOS iCloud path. On Linux, point `OBSIDIAN_VAULT` at any folder, e.g. `~/Documents/BluePeople`.
+
 ## 6. Check it
 
 ```bash
@@ -104,6 +109,7 @@ cd ~/Projects/bluesurf-tools && npm test
 test -f ~/.agents/skills/grill-with-docs/SKILL.md && echo "mattpocock ok"
 test -f ~/.agents/skills/bluesurf-ticket/SKILL.md && echo "ticket skill ok"
 test -f ~/.agents/skills/bluesurf-sprint/SKILL.md && echo "sprint skill ok"
+test -f ~/.agents/skills/bluesurf-mine/SKILL.md && echo "mine skill ok"
 
 # Codex rules
 test -f ~/.codex/AGENTS.md && echo "codex rules ok"

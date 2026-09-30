@@ -16,7 +16,7 @@ Do not treat "create a PR", "share this", "I'm done", "ship it", or similar as p
 
 When you need a decision from the developer, ask through the harness question UI — never as a list of questions left in the chat transcript.
 
-In Cursor, use the AskQuestion tool. Put the whole current frontier in one AskQuestion call (multiple questions allowed). Lead each question with your recommended option, and include Other so they can type a custom answer. Do not also paste the same questions as markdown in your message (no Q1/Q2 blocks, no "which do you prefer?" lists).
+In Cursor, use the AskQuestion tool; in Claude Code, use AskUserQuestion. Put the whole current frontier in one call (multiple questions allowed). Lead each question with your recommended option, and include Other so they can type a custom answer. Do not also paste the same questions as markdown in your message (no Q1/Q2 blocks, no "which do you prefer?" lists).
 
 This overrides grilling's in-chat question format. Keep grilling's rounds and recommended answers; only the delivery changes: harness form, then wait.
 
@@ -31,6 +31,7 @@ Routing:
 - `/bluesurf-ticket`, pull a Surf ticket, or `RLD-xxx` into Obsidian → `bluesurf-ticket`
 - "ticket is complete" or "commit and push" on a pulled Surf ticket → `bluesurf-ticket` (complete branch)
 - `/bluesurf-sprint`, sprint note, or current sprint from Surf → `bluesurf-sprint`
+- `/bluesurf-mine`, my tickets, or what's assigned to me in Surf → `bluesurf-mine`
 - New/fuzzy feature or idea in a repo → `grill-with-docs`
 - Idea with no working repo → `grill-me`
 - Too big or foggy for one session → `wayfinder` (decisions only; then `to-spec`)

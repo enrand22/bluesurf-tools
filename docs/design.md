@@ -93,7 +93,7 @@ Each work item: `code`, `name`, `priority` / `priorityName`, `estimatedEffort`, 
 
 1. **Sprint list endpoint** — board filter still sends `sprints: []`. SPA source also has `POST /api/projectSprint` (save) and `POST /api/workItems/byProperty/sprint` (assign). No dedicated list GET in the captures. Keep inferring the current sprint from `currentSprintId` on kanban cards.
 2. **Attachments** — mapped from RLD-339 + SPA `downloadFile` / `getFileNames`. `npm run ticket -- RLD-xxx` writes `detail.md` and downloads `GET /api/workItem/{id}/file/{fileId}`.
-3. **Sprint note** — `npm run sprint` writes `RLand/Sprints/<YYYY-MM-DD>.md` from `listMyCurrentSprintRows`, or rewrites the existing file if that sprint heading is already in the folder. Two tables: **Pending Tickets** (`Development (IN PROGRESS)`, `Analysis (IN PROGRESS)`, `Analysis (DONE)`) and **Done Tickets** (the rest). Estimate is `estimatedEffort`. Effort is **reported** hours (`totalExecuted` from `GET /api/workItem/{code}`; kanban `totalHours` is estimate×1.25 and is not used). Ordered by priority. Still no sprint-list GET; current sprint is the modal `currentSprintId` on your assigned cards.
+3. **Sprint note** — `npm run sprint` writes `RLand/Sprints/<YYYY-MM-DD>.md` from `listMyCurrentSprintRows`, or rewrites the existing file if that sprint heading is already in the folder. Two tables: **Pending Tickets** (`Development (IN PROGRESS)`, `Analysis (IN PROGRESS)`, `Analysis (DONE)`, any `BLOCKED`) and **Done Tickets** (the rest). Estimate is `estimatedEffort`. Effort is **reported** hours (`totalExecuted` from `GET /api/workItem/{code}`; kanban `totalHours` is estimate×1.25 and is not used). Ordered by priority. Still no sprint-list GET; current sprint is the highest-numbered `currentSprintName` on your assigned cards. The most common `currentSprintId` was tried first and picked a past sprint: old sprints keep their cards, so a big old sprint outvotes a smaller current one.
 
 ## Proposed client functions
 
@@ -109,7 +109,7 @@ Do not install skills yet. Implement these in `src/` next:
 - `listMyProjects()` / `resolveProject(code)`.
 - `getKanban(projectCode, filters)` — raw board.
 - `listMyWorkItems(projectCode)` — flatten `statuses[].workItems` with `assignedTo: [me]`.
-- `listMyCurrentSprintWorkItems(projectCode)` — same list, keep items whose `currentSprintId` is the modal current sprint (most frequent non-empty `currentSprintId`, or explicit `sprints` filter once we have an id).
+- `listMyCurrentSprintWorkItems(projectCode)` — same list, keep items on the latest sprint (highest number in `currentSprintName`; most frequent `currentSprintId` as a fallback, or explicit `sprints` filter once we have an id).
 - `sortByPriority(items)` — `priority` descending (5 → 1).
 - `toSprintRow(item)` — `{ code, title, estimatedHours, type, tags, priority, status, sprint }`.
 - `toTicketNote(item)` — markdown for `RLand/Tickets/{code}/detail.md`.

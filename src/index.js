@@ -5,6 +5,10 @@ export { createSessionClient, createSessionRequest, profileDir } from "./session
 export { createVault, safeFileName } from "./vault.js";
 export {
   flattenKanbanWorkItems,
+  formatMyTickets,
+  groupMyTickets,
+  isDoneStatus,
+  latestCurrentSprintId,
   listMyCurrentSprintWorkItems,
   modalCurrentSprintId,
   parseTicketKey,
@@ -13,5 +17,6 @@ export {
   toAttachment,
   toSprintNote,
   toSprintRow,
+  toMyTicketRow,
   toTicketNote,
 } from "./model.js";
