@@ -4,6 +4,7 @@ import {
   parseTicketKey,
   flattenKanbanWorkItems,
   modalCurrentSprintId,
+  latestCurrentSprintId,
   listMyCurrentSprintWorkItems,
   sortByPriority,
   groupSprintRows,
@@ -110,8 +111,31 @@ describe("modalCurrentSprintId", () => {
   });
 });
 
+describe("latestCurrentSprintId", () => {
+  it("picks the highest-numbered sprint even when an older sprint has more cards", () => {
+    const items = [
+      { currentSprintId: "s11", currentSprintName: "Sprint 11" },
+      { currentSprintId: "s11", currentSprintName: "Sprint 11" },
+      { currentSprintId: "s11", currentSprintName: "Sprint 11" },
+      { currentSprintId: "s15", currentSprintName: "Sprint 15" },
+      { currentSprintId: "s9", currentSprintName: "Sprint 9" },
+      { currentSprintId: null, currentSprintName: null },
+    ];
+    assert.equal(latestCurrentSprintId(items), "s15");
+  });
+
+  it("falls back to the most common sprint when names carry no number", () => {
+    const items = [
+      { currentSprintId: "a", currentSprintName: "Alpha" },
+      { currentSprintId: "b", currentSprintName: "Beta" },
+      { currentSprintId: "b", currentSprintName: "Beta" },
+    ];
+    assert.equal(latestCurrentSprintId(items), "b");
+  });
+});
+
 describe("listMyCurrentSprintWorkItems", () => {
-  it("keeps items on the modal current sprint", () => {
+  it("keeps items on the latest current sprint", () => {
     assert.deepEqual(
       listMyCurrentSprintWorkItems(kanban).map((item) => item.code),
       ["RLD-336", "RLD-337"],
@@ -148,18 +172,20 @@ describe("toSprintRow", () => {
 });
 
 describe("groupSprintRows", () => {
-  it("puts analysis/dev in progress and analysis done in pending, the rest in done", () => {
+  it("puts analysis/dev in progress, analysis done, and blocked in pending, the rest in done", () => {
     const rows = [
       { code: "RLD-1", status: "Testing (DONE)" },
       { code: "RLD-2", status: "Analysis (DONE)" },
       { code: "RLD-3", status: "Development (IN PROGRESS)" },
       { code: "RLD-4", status: "Analysis (IN PROGRESS)" },
       { code: "RLD-5", status: "Development (DONE)" },
+      { code: "RLD-6", status: "Validation (BLOCKED)" },
+      { code: "RLD-7", status: "Blocked" },
     ];
     const groups = groupSprintRows(rows);
     assert.deepEqual(
       groups.pending.map((row) => row.code),
-      ["RLD-2", "RLD-3", "RLD-4"],
+      ["RLD-2", "RLD-3", "RLD-4", "RLD-6", "RLD-7"],
     );
     assert.deepEqual(
       groups.done.map((row) => row.code),
@@ -192,6 +218,16 @@ describe("toSprintNote", () => {
         "| [[RLand/Tickets/RLD-337/detail\\|RLD-337]] | Same sprint other item | 2h | 0h | Task | In Progress | Medium | — |",
         "",
       ].join("\n"),
+    );
+  });
+});
+
+describe("toSprintNote ticketsDir", () => {
+  it("links tickets under the configured tickets folder", () => {
+    const rows = [toSprintRow(flattenKanbanWorkItems(kanban)[1])];
+    assert.match(
+      toSprintNote(rows, { date: "2026-09-09", ticketsDir: "Work/Surf" }),
+      /\[\[Work\/Surf\/RLD-336\/detail\\\|RLD-336\]\]/,
     );
   });
 });

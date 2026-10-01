@@ -39,9 +39,30 @@ export function modalCurrentSprintId(items) {
   return winner;
 }
 
+function sprintNumber(name) {
+  const match = /(\d+)/.exec(String(name ?? ""));
+  return match ? Number(match[1]) : null;
+}
+
+// Surf has no "current sprint" endpoint. Old sprints keep their cards, so the
+// most common sprint is often a past one; prefer the highest-numbered sprint.
+export function latestCurrentSprintId(items) {
+  let winner = null;
+  let max = -Infinity;
+  for (const item of items) {
+    const number = sprintNumber(item.currentSprintName);
+    if (!item.currentSprintId || number === null) continue;
+    if (number > max) {
+      winner = item.currentSprintId;
+      max = number;
+    }
+  }
+  return winner ?? modalCurrentSprintId(items);
+}
+
 export function listMyCurrentSprintWorkItems(kanban) {
   const items = flattenKanbanWorkItems(kanban);
-  const sprintId = modalCurrentSprintId(items);
+  const sprintId = latestCurrentSprintId(items);
   if (!sprintId) return [];
   return items.filter((item) => item.currentSprintId === sprintId);
 }
@@ -56,7 +77,8 @@ function isPendingSprintStatus(status) {
   const dev = value.includes("dev");
   const inProgress = value.includes("in progress");
   const done = value.includes("done");
-  return (dev && inProgress) || (analysis && inProgress) || (analysis && done);
+  const blocked = value.includes("blocked");
+  return blocked || (dev && inProgress) || (analysis && inProgress) || (analysis && done);
 }
 
 export function groupSprintRows(rows) {
@@ -101,13 +123,13 @@ function tableCell(value) {
   return String(value ?? "").replaceAll("|", "\\|");
 }
 
-function sprintTable(rows) {
+function sprintTable(rows, ticketsDir) {
   const lines = [
     "| Ticket | Title | Estimate | Effort | Type | Status | Priority | Tags |",
     "| --- | --- | --- | --- | --- | --- | --- | --- |",
   ];
   for (const row of rows) {
-    const ticket = `[[RLand/Tickets/${row.code}/detail|${row.code}]]`;
+    const ticket = `[[${ticketsDir}/${row.code}/detail|${row.code}]]`;
     const tags = row.tags?.length ? row.tags.join(", ") : "—";
     lines.push(
       `| ${tableCell(ticket)} | ${tableCell(row.title)} | ${row.estimatedHours}h | ${row.effortHours ?? 0}h | ${tableCell(row.type)} | ${tableCell(row.status)} | ${tableCell(row.priority)} | ${tableCell(tags)} |`,
@@ -116,7 +138,7 @@ function sprintTable(rows) {
   return lines;
 }
 
-export function toSprintNote(rows, { date } = {}) {
+export function toSprintNote(rows, { date, ticketsDir = "RLand/Tickets" } = {}) {
   const sprint = rows[0]?.sprint || "Current sprint";
   const { pending, done } = groupSprintRows(rows);
   return [
@@ -124,11 +146,11 @@ export function toSprintNote(rows, { date } = {}) {
     "",
     "## Pending Tickets",
     "",
-    ...sprintTable(pending),
+    ...sprintTable(pending, ticketsDir),
     "",
     "## Done Tickets",
     "",
-    ...sprintTable(done),
+    ...sprintTable(done, ticketsDir),
     "",
   ].join("\n");
 }
@@ -185,4 +207,53 @@ export function findBoardStatus(boards, type, query) {
       ? `"${query}" matches ${names(partial)}. Be more specific.`
       : `No status "${query}". Options: ${names(statuses)}`,
   );
+export function isDoneStatus(status) {
+  return String(status ?? "").toLowerCase().includes("done");
+}
+
+export function toMyTicketRow(item) {
+  return {
+    code: item.code,
+    title: item.name,
+    status: item.statusName ?? "",
+    priority: item.priorityName ?? "",
+    estimatedHours: item.estimatedEffort ?? 0,
+    type: item.typeDisplayName ?? "",
+    tags: (item.tags ?? []).map((tag) => tag.tagName).filter(Boolean),
+    sprint: item.currentSprintName ?? "",
+  };
+}
+
+// Groups my work items by sprint: newest sprint first (by the number in its
+// name), no sprint last, priority order inside each. Hides DONE unless `all`.
+export function groupMyTickets(items, { all = false } = {}) {
+  const groups = new Map();
+  for (const item of items) {
+    if (!all && isDoneStatus(item.statusName)) continue;
+    const key = item.currentSprintName || "";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+  const rank = (name) => {
+    if (!name) return -1;
+    const match = /(\d+)/.exec(name);
+    return match ? Number(match[1]) : 0;
+  };
+  return [...groups.entries()]
+    .sort(([a], [b]) => rank(b) - rank(a))
+    .map(([sprint, list]) => ({
+      sprint: sprint || "No sprint",
+      items: sortByPriority(list).map(toMyTicketRow),
+    }));
+}
+
+export function formatMyTickets(groups) {
+  const lines = [];
+  for (const { sprint, items } of groups) {
+    lines.push(`${sprint} (${items.length})`);
+    for (const row of items) {
+      lines.push(`  ${row.code}  ${row.status}  ${row.priority}  ${row.estimatedHours}h  ${row.title}`);
+    }
+  }
+  return lines.join("\n");
 }

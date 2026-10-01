@@ -6,6 +6,10 @@ export { createVault, safeFileName } from "./vault.js";
 export {
   findBoardStatus,
   flattenKanbanWorkItems,
+  formatMyTickets,
+  groupMyTickets,
+  isDoneStatus,
+  latestCurrentSprintId,
   listMyCurrentSprintWorkItems,
   modalCurrentSprintId,
   parseTicketKey,
@@ -14,5 +18,6 @@ export {
   toAttachment,
   toSprintNote,
   toSprintRow,
+  toMyTicketRow,
   toTicketNote,
 } from "./model.js";
